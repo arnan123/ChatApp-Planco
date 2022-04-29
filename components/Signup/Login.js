@@ -9,56 +9,73 @@ import {
   View,
   Alert,
 } from 'react-native';
-import { auth } from '../firebase';
+import { auth } from '../../firebase';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
 } from 'firebase/auth';
-import Logo from '../components/Logo';
-import Login from '../components/Signup/Login';
-import Signup from '../components/Signup/Signup';
 
-const LoginScreen = () => {
-  const navigation = useNavigation();
-  const [status, setStatus] = useState(true);
+export default function Login({ setStatus }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        navigation.replace('Home');
-      }
-    });
-
-    return unsubscribe;
-  }, []);
+  const handleLogin = async () => {
+    if (email === '' || password === '') {
+      Alert.alert('Error', 'Missing Fields', [
+        {
+          text: 'OKAY',
+          onPress: () => console.log('Okay pressed'),
+        },
+      ]);
+    } else {
+      const res = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      )
+        .then((userCredentials) => {
+          const user = userCredentials.user;
+          console.log('Logged in with:', user.email);
+        })
+        .catch((error) => alert(error.message));
+    }
+  };
 
   return (
-    <KeyboardAvoidingView style={styles.container}>
-      <Logo />
-      {status ? (
-        <Login setStatus={setStatus} />
-      ) : (
-        <Signup setStatus={setStatus} />
-      )}
+    <>
+      <View style={styles.inputContainer}>
+        <TextInput
+          placeholder="Email"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
+          style={styles.input}
+        />
+        <TextInput
+          placeholder="Password"
+          value={password}
+          onChangeText={(text) => setPassword(text)}
+          style={styles.input}
+          secureTextEntry
+        />
+      </View>
 
-      <View style={styles.buttonOtherContainer}>
-        <TouchableOpacity
-          style={[styles.buttonOther, { borderColor: 'black' }]}
-        >
-          <Text style={styles.buttonText}>Sign in with google</Text>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={handleLogin} style={styles.button}>
+          <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.buttonOther]}>
+        <TouchableOpacity
+          style={[styles.button, styles.buttonOutline]}
+          onPress={() => setStatus(false)}
+        >
           <Text style={styles.buttonOutlineText}>
-            Sign in with facebook
+            Create an account
           </Text>
         </TouchableOpacity>
       </View>
-    </KeyboardAvoidingView>
+    </>
   );
-};
-
-export default LoginScreen;
+}
 
 const styles = StyleSheet.create({
   container: {
