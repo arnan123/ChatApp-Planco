@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
 } from 'react-native';
 import { auth } from '../firebase';
 import {
@@ -14,6 +15,7 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
 } from 'firebase/auth';
+import { Badge } from 'react-native-paper';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -46,16 +48,25 @@ const LoginScreen = () => {
   };
 
   const handleLogin = async () => {
-    const res = await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    )
-      .then((userCredentials) => {
-        const user = userCredentials.user;
-        console.log('Logged in with:', user.email);
-      })
-      .catch((error) => alert(error.message));
+    if (email == '' || password == '') {
+      Alert.alert('Error', 'Missing Fields', [
+        {
+          text: 'OKAY',
+          onPress: () => console.log('Okay pressed'),
+        },
+      ]);
+    } else {
+      const res = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      )
+        .then((userCredentials) => {
+          const user = userCredentials.user;
+          console.log('Logged in with:', user.email);
+        })
+        .catch((error) => alert(error.message));
+    }
   };
 
   return (
@@ -70,23 +81,27 @@ const LoginScreen = () => {
         <TextInput
           placeholder="Password"
           value={password}
+          textContentType="password"
           onChangeText={(text) => setPassword(text)}
           style={styles.input}
-          secureTextEntry
+          secureTextEntry={false}
         />
       </View>
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={handleLogin} style={styles.button}>
-          <Text style={styles.buttonText}>Login</Text>
+          <Text style={styles.buttonText}>Sign in</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={handleSignUp}
           style={[styles.button, styles.buttonOutline]}
         >
-          <Text style={styles.buttonOutlineText}>Register</Text>
+          <Text style={styles.buttonOutlineText}>
+            Create an account
+          </Text>
         </TouchableOpacity>
       </View>
+      <View></View>
     </KeyboardAvoidingView>
   );
 };
@@ -108,15 +123,18 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     marginTop: 5,
+    borderColor: 'black',
+    borderStyle: 'solid',
+    borderWidth: '2px',
   },
   buttonContainer: {
-    width: '60%',
+    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 40,
   },
   button: {
-    backgroundColor: '#0782F9',
+    backgroundColor: 'green',
     width: '100%',
     padding: 15,
     borderRadius: 10,
@@ -125,8 +143,6 @@ const styles = StyleSheet.create({
   buttonOutline: {
     backgroundColor: 'white',
     marginTop: 5,
-    borderColor: '#0782F9',
-    borderWidth: 2,
   },
   buttonText: {
     color: 'white',
