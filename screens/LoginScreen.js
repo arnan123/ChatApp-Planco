@@ -15,89 +15,34 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
 } from 'firebase/auth';
-import { Badge } from 'react-native-paper';
+import Logo from '../components/Logo';
+import Login from '../components/Signup/Login';
+import Signup from '../components/Signup/Signup';
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
   const navigation = useNavigation();
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        navigation.replace('Home');
-      }
-    });
-
-    return unsubscribe;
-  }, []);
-
-  const handleSignUp = async () => {
-    console.log(email);
-    const res = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    )
-      .then((userCredentials) => {
-        const user = userCredentials.user;
-        console.log('Registered with:', user.email);
-      })
-      .catch((error) => alert(error.message));
-  };
-
-  const handleLogin = async () => {
-    if (email == '' || password == '') {
-      Alert.alert('Error', 'Missing Fields', [
-        {
-          text: 'OKAY',
-          onPress: () => console.log('Okay pressed'),
-        },
-      ]);
-    } else {
-      const res = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      )
-        .then((userCredentials) => {
-          const user = userCredentials.user;
-          console.log('Logged in with:', user.email);
-        })
-        .catch((error) => alert(error.message));
-    }
-  };
+  const [status, setStatus] = useState(true);
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding">
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Email"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-          style={styles.input}
-        />
-        <TextInput
-          placeholder="Password"
-          value={password}
-          textContentType="password"
-          onChangeText={(text) => setPassword(text)}
-          style={styles.input}
-          secureTextEntry={false}
-        />
-      </View>
+    <KeyboardAvoidingView style={styles.container}>
+      <Logo />
+      {status ? (
+        <Login setStatus={setStatus} />
+      ) : (
+        <Signup setStatus={setStatus} />
+      )}
 
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={handleLogin} style={styles.button}>
-          <Text style={styles.buttonText}>Sign in</Text>
-        </TouchableOpacity>
+      <View style={styles.buttonOtherContainer}>
+
         <TouchableOpacity
-          onPress={handleSignUp}
-          style={[styles.button, styles.buttonOutline]}
+          style={[styles.buttonOther, { borderColor: 'black' }]}
         >
+          <Text style={styles.buttonText}>Sign in with google</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.buttonOther]}>
           <Text style={styles.buttonOutlineText}>
-            Create an account
+            Sign in with facebook
+
           </Text>
         </TouchableOpacity>
       </View>
@@ -113,6 +58,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    
   },
   inputContainer: {
     width: '80%',
@@ -123,35 +69,49 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     marginTop: 5,
-    borderColor: 'black',
-    borderStyle: 'solid',
-    borderWidth: '2px',
+    borderWidth: 2,
   },
   buttonContainer: {
-    width: '100%',
+    width: '90%',
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 40,
   },
   button: {
-    backgroundColor: 'green',
+    backgroundColor: '#7dff83',
     width: '100%',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
   },
   buttonOutline: {
-    backgroundColor: 'white',
+    backgroundColor: '#bababa',
     marginTop: 5,
   },
   buttonText: {
-    color: 'white',
+    color: 'black',
     fontWeight: '700',
     fontSize: 16,
   },
   buttonOutlineText: {
-    color: '#0782F9',
+    color: 'black',
     fontWeight: '700',
     fontSize: 16,
+  },
+  buttonOtherContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  buttonOther: {
+    marginHorizontal: 20,
+    marginTop: 5,
+  },
+  buttonGoogle: {
+    borderColor: 'black',
+    borderWidth: 1,
+  },
+  buttonFacebook: {
+    backgroundColor: 'blue',
   },
 });

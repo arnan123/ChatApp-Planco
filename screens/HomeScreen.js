@@ -1,32 +1,46 @@
 import { useNavigation } from '@react-navigation/core';
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { auth } from '../firebase';
+import Profile from '../components/Profile/Profile';
+// import Body from '../components/Chats/Body';
+import Body from '../components/Contact/Contacts';
+import { auth, db } from '../firebase';
+import { BottomNavigation } from 'react-native-paper';
+import { AuthContext } from '../components/Context/Auth';
+import { doc, getDoc } from 'firebase/firestore';
+
+const BodyRoute = () => <Body />;
+
+const ProfileRoute = () => <Profile />;
 
 const HomeScreen = () => {
   const navigation = useNavigation();
 
-  const handleSignOut = () => {
-    auth
-      .signOut()
-      .then(() => {
-        navigation.replace('Login');
-      })
-      .catch((error) => alert(error.message));
-  };
+  const [userData, setUserData] = useState({});
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: 'chat', title: 'Chat', icon: 'chat' },
+    { key: 'profile', title: 'Profile', icon: 'account' },
+  ]);
+
+  const renderScene = BottomNavigation.SceneMap({
+    chat: BodyRoute,
+    profile: ProfileRoute,
+  });
 
   return (
-    <View style={styles.container}>
-      <Text>Email: {auth.currentUser?.email}</Text>
-      <TouchableOpacity onPress={handleSignOut} style={styles.button}>
-        <Text style={styles.buttonText}>Sign out</Text>
-      </TouchableOpacity>
-    </View>
+    <>
+      <BottomNavigation
+        navigationState={{ index, routes }}
+        onIndexChange={setIndex}
+        renderScene={renderScene}
+      />
+    </>
   );
 };
 

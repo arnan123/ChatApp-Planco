@@ -6,13 +6,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
-import { Provider as PaperProvider } from 'react-native-paper';
+import AuthProvider from './components/Context/Auth';
+import ChatScreen from './screens/ChatScreen';
+
 
 const Stack = createNativeStackNavigator();
 
 function App() {
   return (
-    <PaperProvider>
+    <AuthProvider>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
@@ -20,10 +22,20 @@ function App() {
             name="Login"
             component={LoginScreen}
           />
-          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen
+            options={{ headerShown: false }}
+            name="Home"
+            component={HomeScreen}
+          />
+          {/* <Stack.Screen
+            options={{ headerShown: false }}
+            name="Chat"
+            component={ChatScreen}
+          /> */}
         </Stack.Navigator>
       </NavigationContainer>
-    </PaperProvider>
+    </AuthProvider>
+
   );
 }
 
