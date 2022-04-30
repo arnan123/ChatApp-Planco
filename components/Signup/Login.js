@@ -15,6 +15,7 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
 } from 'firebase/auth';
+import GoogleButton from 'react-google-button';
 
 export default function Login({ setStatus }) {
   const navigation = useNavigation();
@@ -40,7 +41,14 @@ export default function Login({ setStatus }) {
           console.log('Logged in with:', user.email);
           navigation.replace('Home');
         })
-        .catch((error) => alert(error.message));
+        .catch((error) =>
+          Alert.alert('Error', 'No Users Found', [
+            {
+              text: 'OKAY',
+              onPress: () => console.log('Okay pressed'),
+            },
+          ])
+        );
     }
   };
 
@@ -77,13 +85,16 @@ export default function Login({ setStatus }) {
           }
         />
       </View>
-      <View style={styles.inputContainer}>
+      <View
+        style={[styles.inputContainer, { alignItems: 'flex-end' }]}
+      >
         <Button
           onPress={() => {
             navigation.navigate('Forgot');
           }}
+          style={{ marginTop: 10 }}
         >
-          Forgot Password
+          <Text style={{ color: 'gray' }}>Forgot Password</Text>
         </Button>
       </View>
 
@@ -100,17 +111,61 @@ export default function Login({ setStatus }) {
           </Text>
         </TouchableOpacity>
       </View>
+      <View style={{ flexDirection: 'row', marginVertical: 20 }}>
+        <View
+          style={{
+            backgroundColor: 'black',
+            height: 2,
+            flex: 1,
+            alignSelf: 'center',
+          }}
+        />
+        <Text
+          style={{
+            alignSelf: 'center',
+            paddingHorizontal: 10,
+            fontSize: 16,
+          }}
+        >
+          or
+        </Text>
+        <View
+          style={{
+            backgroundColor: 'black',
+            height: 2,
+            flex: 1,
+            alignSelf: 'center',
+          }}
+        />
+      </View>
       <View style={styles.buttonOtherContainer}>
-        <TouchableOpacity
+        <Button
+          icon={'google'}
+          color="white"
+          mode="contained"
+          style={[styles.buttonOther]}
+        >
+          <Text style={{ color: 'black' }}>Google Signin</Text>
+        </Button>
+        {/* <TouchableOpacity
           style={[styles.buttonOther, { borderColor: 'black' }]}
         >
           <Text style={styles.buttonText}>Sign in with google</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.buttonOther]}>
+        </TouchableOpacity> */}
+        {/* <TouchableOpacity style={[styles.buttonOther]}>
           <Text style={styles.buttonOutlineText}>
             Sign in with facebook
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+
+        <Button
+          icon="facebook"
+          color="white"
+          mode="contained"
+          style={styles.buttonOther}
+        >
+          <Text>Facebook Signin</Text>
+        </Button>
       </View>
     </>
   );
@@ -132,10 +187,10 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   buttonContainer: {
-    width: '90%',
+    width: '95%',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 40,
+    marginTop: 10,
   },
   button: {
     backgroundColor: '#7dff83',
@@ -162,10 +217,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
+    width: '100%',
   },
   buttonOther: {
-    marginHorizontal: 20,
+    marginHorizontal: 5,
     marginTop: 5,
+    width: '45%',
+    height: '100%',
   },
   buttonGoogle: {
     borderColor: 'black',
@@ -173,5 +231,9 @@ const styles = StyleSheet.create({
   },
   buttonFacebook: {
     backgroundColor: 'blue',
+  },
+  textDivider: {
+    display: 'flex',
+    alignItems: 'center',
   },
 });
