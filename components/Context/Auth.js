@@ -12,10 +12,12 @@ const AuthProvider = ({ children }) => {
 
   useEffect(async () => {
     onAuthStateChanged(auth, (user) => {
-      const data = doc(db, 'users', user.uid);
-      getDoc(data).then((res) => {
-        setUser(res.data());
-      });
+      if (user) {
+        const data = doc(db, 'users', auth.currentUser?.uid);
+        getDoc(data).then((res) => {
+          setUser(res.data());
+        });
+      }
       setLoading(false);
     });
   }, []);
@@ -23,7 +25,7 @@ const AuthProvider = ({ children }) => {
     return <SplashScreen />;
   }
   return (
-    <AuthContext.Provider value={{ user }}>
+    <AuthContext.Provider value={{ user, setUser }}>
       {children}
     </AuthContext.Provider>
   );

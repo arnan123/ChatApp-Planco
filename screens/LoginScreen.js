@@ -31,22 +31,6 @@ const LoginScreen = () => {
       ) : (
         <Signup setStatus={setStatus} />
       )}
-
-      <View style={styles.buttonOtherContainer}>
-
-        <TouchableOpacity
-          style={[styles.buttonOther, { borderColor: 'black' }]}
-        >
-          <Text style={styles.buttonText}>Sign in with google</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.buttonOther]}>
-          <Text style={styles.buttonOutlineText}>
-            Sign in with facebook
-
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <View></View>
     </KeyboardAvoidingView>
   );
 };
@@ -58,7 +42,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    
   },
   inputContainer: {
     width: '80%',
