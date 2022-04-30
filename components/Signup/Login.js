@@ -8,7 +8,7 @@ import {
   View,
   Alert,
 } from 'react-native';
-import { TextInput } from 'react-native-paper';
+import { Button, TextInput } from 'react-native-paper';
 import { auth } from '../../firebase';
 import {
   createUserWithEmailAndPassword,
@@ -21,6 +21,7 @@ export default function Login({ setStatus }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
+  const [eyes, setEyes] = useState(true);
 
   const handleLogin = async () => {
     if (email === '' || password === '') {
@@ -60,11 +61,30 @@ export default function Login({ setStatus }) {
           value={password}
           onChangeText={(text) => setPassword(text)}
           style={styles.input}
-          secureTextEntry
+          secureTextEntry={eyes}
           mode="outlined"
           outlineColor={error && password === '' ? 'red' : 'black'}
-          activeOutlineColor={error && email === '' ? 'red' : 'black'}
+          activeOutlineColor={
+            error && password === '' ? 'red' : 'black'
+          }
+          right={
+            <TextInput.Icon
+              name="eye"
+              onPress={() => {
+                setEyes(!eyes);
+              }}
+            />
+          }
         />
+      </View>
+      <View style={styles.inputContainer}>
+        <Button
+          onPress={() => {
+            navigation.navigate('Forgot');
+          }}
+        >
+          Forgot Password
+        </Button>
       </View>
 
       <View style={styles.buttonContainer}>
@@ -77,6 +97,18 @@ export default function Login({ setStatus }) {
         >
           <Text style={styles.buttonOutlineText}>
             Create an account
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.buttonOtherContainer}>
+        <TouchableOpacity
+          style={[styles.buttonOther, { borderColor: 'black' }]}
+        >
+          <Text style={styles.buttonText}>Sign in with google</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.buttonOther]}>
+          <Text style={styles.buttonOutlineText}>
+            Sign in with facebook
           </Text>
         </TouchableOpacity>
       </View>

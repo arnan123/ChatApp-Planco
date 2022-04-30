@@ -37,7 +37,7 @@ export default function ContactList({ visible }) {
   return (
     <SafeAreaView style={styles.containerResults}>
       <ScrollView>
-        {friends ? (
+        {friends.length > 0 ? (
           friends.map((f) => (
             <>
               <View key={f.id} style={styles.container}>

@@ -13,12 +13,12 @@ const AuthProvider = ({ children }) => {
   useEffect(async () => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        const data = doc(db, 'users', user.uid);
+        const data = doc(db, 'users', auth.currentUser?.uid);
         getDoc(data).then((res) => {
           setUser(res.data());
         });
-        setLoading(false);
       }
+      setLoading(false);
     });
   }, []);
   if (loading) {

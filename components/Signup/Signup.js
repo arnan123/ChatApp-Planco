@@ -4,7 +4,6 @@ import {
   KeyboardAvoidingView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
   Alert,
@@ -16,13 +15,16 @@ import {
   onAuthStateChanged,
 } from 'firebase/auth';
 import { doc, setDoc, Timestamp } from 'firebase/firestore';
+import { TextInput } from 'react-native-paper';
 
 function Signup({ setStatus }) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
+  const [error, setError] = useState(false);
+  const [eyes, setEyes] = useState(true);
+  const [eyes1, setEyes1] = useState(true);
   const handleSignUp = async (e) => {
     if (!username || !email || !password || !confirmPassword) {
       Alert.alert('Error', 'Missing Fields', [
@@ -31,6 +33,7 @@ function Signup({ setStatus }) {
           onPress: () => console.log('Okay pressed'),
         },
       ]);
+      setError(true);
     } else if (password != confirmPassword) {
       Alert.alert('Error', 'Password Mismatch', [
         {
@@ -43,13 +46,13 @@ function Signup({ setStatus }) {
         const emailLower = email.toLowerCase();
         const res = await createUserWithEmailAndPassword(
           auth,
-          emailLower,
+          email,
           password
         );
         await setDoc(doc(db, 'users', res.user.uid), {
           uid: res.user.uid,
           username,
-          emailLower,
+          email,
           createdAt: Timestamp.fromDate(new Date()),
           isOnline: false,
         }).then((res) => {
@@ -78,26 +81,62 @@ function Signup({ setStatus }) {
           value={username}
           onChangeText={(text) => setUsername(text)}
           style={styles.input}
+          outlineColor={error && username === '' ? 'red' : 'black'}
+          activeOutlineColor={
+            error && username === '' ? 'red' : 'black'
+          }
+          mode="outlined"
         />
         <TextInput
           placeholder="Email"
           value={email}
           onChangeText={(text) => setEmail(text)}
           style={styles.input}
+          outlineColor={error && email === '' ? 'red' : 'black'}
+          activeOutlineColor={error && email === '' ? 'red' : 'black'}
+          mode="outlined"
         />
         <TextInput
           placeholder="Password"
           value={password}
           onChangeText={(text) => setPassword(text)}
           style={styles.input}
-          secureTextEntry
+          secureTextEntry={eyes}
+          mode="outlined"
+          outlineColor={error && password === '' ? 'red' : 'black'}
+          activeOutlineColor={
+            error && password === '' ? 'red' : 'black'
+          }
+          right={
+            <TextInput.Icon
+              name="eye"
+              onPress={() => {
+                setEyes(!eyes);
+              }}
+            />
+          }
         />
         <TextInput
           placeholder="Confirm Password"
           value={confirmPassword}
           onChangeText={(text) => setConfirmPassword(text)}
           style={styles.input}
-          secureTextEntry
+          mode="outlined"
+          secureTextEntry={eyes1}
+          outlineColor={
+            error && confirmPassword === '' ? 'red' : 'black'
+          }
+          activeOutlineColor={
+            error && confirmPassword === '' ? 'red' : 'black'
+          }
+          right={
+            <TextInput.Icon
+              name="eye"
+              onPress={() => {
+                setEyes1(!eyes1);
+              }}
+            />
+          }
         />
       </View>
 
@@ -137,10 +176,8 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: 'white',
     paddingHorizontal: 15,
-    paddingVertical: 10,
     borderRadius: 10,
     marginTop: 5,
-    borderWidth: 2,
   },
   buttonContainer: {
     width: '90%',
