@@ -33,6 +33,7 @@ const LoginScreen = () => {
       )}
 
       <View style={styles.buttonOtherContainer}>
+
         <TouchableOpacity
           style={[styles.buttonOther, { borderColor: 'black' }]}
         >
@@ -41,9 +42,11 @@ const LoginScreen = () => {
         <TouchableOpacity style={[styles.buttonOther]}>
           <Text style={styles.buttonOutlineText}>
             Sign in with facebook
+
           </Text>
         </TouchableOpacity>
       </View>
+      <View></View>
     </KeyboardAvoidingView>
   );
 };

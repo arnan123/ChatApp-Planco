@@ -9,6 +9,7 @@ import LoginScreen from './screens/LoginScreen';
 import AuthProvider from './components/Context/Auth';
 import ChatScreen from './screens/ChatScreen';
 
+
 const Stack = createNativeStackNavigator();
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>
+
   );
 }
 
