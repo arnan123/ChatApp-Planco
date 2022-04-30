@@ -26,11 +26,11 @@ function App() {
             name="Home"
             component={HomeScreen}
           />
-          {/* <Stack.Screen
+          <Stack.Screen
             options={{ headerShown: false }}
             name="Chat"
             component={ChatScreen}
-          /> */}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>

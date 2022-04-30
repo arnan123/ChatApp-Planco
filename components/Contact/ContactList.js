@@ -9,18 +9,22 @@ import {
   View,
 } from 'react-native';
 import { Button, Text } from 'react-native-paper';
-import { db } from '../../firebase';
+import { auth, db } from '../../firebase';
 import { AuthContext } from '../Context/Auth';
 
 export default function ContactList({ visible }) {
   const { user } = useContext(AuthContext);
   const [friends, setFriends] = useState([]);
   const navigation = useNavigation();
+
   const getAllUsers = async () => {
-    console.log(user.uid);
-    const ref = collection(db, 'users', user.uid, 'friends');
+    const ref = collection(
+      db,
+      'users',
+      auth.currentUser?.uid,
+      'friends'
+    );
     const data = await getDocs(ref);
-    console.log(data.docs);
     setFriends(
       data.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
     );
@@ -38,16 +42,18 @@ export default function ContactList({ visible }) {
             <>
               <View key={f.id} style={styles.container}>
                 <TouchableOpacity
-                // onPress={()=>{
-                //     navigation.navigate("Chat",{
-                //         id:f.uid,
-                //         name:f.username,
-                //         email:f.email,
-                //     })
-                // }}
+                  onPress={() => {
+                    console.log('navigateChat');
+                    navigation.navigate('Chat', {
+                      uid: f.uid,
+                      name: f.username,
+                      email: f.email,
+                    });
+                  }}
                 >
                   <Text>Email: {f.email}</Text>
                   <Text>Username:{f.username}</Text>
+                  <Text>Username:{user.username}</Text>
                 </TouchableOpacity>
               </View>
             </>

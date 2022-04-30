@@ -79,7 +79,13 @@ export default function Searchbar({
     //     ? `${auth.currentUser?.uid + users.uid}`
     //     : `${users.uid + auth.currentUser?.uid}`;
 
-    const docRef = doc(db, 'users', user.uid, 'friends', users.uid);
+    const docRef = doc(
+      db,
+      'users',
+      auth.currentUser?.uid,
+      'friends',
+      users.uid
+    );
     const docs = await getDoc(docRef);
 
     if (docs.exists()) {
