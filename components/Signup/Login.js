@@ -4,11 +4,11 @@ import {
   KeyboardAvoidingView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
   Alert,
 } from 'react-native';
+import { TextInput } from 'react-native-paper';
 import { auth } from '../../firebase';
 import {
   createUserWithEmailAndPassword,
@@ -17,8 +17,10 @@ import {
 } from 'firebase/auth';
 
 export default function Login({ setStatus }) {
+  const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(false);
 
   const handleLogin = async () => {
     if (email === '' || password === '') {
@@ -28,15 +30,14 @@ export default function Login({ setStatus }) {
           onPress: () => console.log('Okay pressed'),
         },
       ]);
+      setError(true);
     } else {
-      const res = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      )
+      const emailLower = email.toLowerCase();
+      await signInWithEmailAndPassword(auth, emailLower, password)
         .then((userCredentials) => {
           const user = userCredentials.user;
           console.log('Logged in with:', user.email);
+          navigation.replace('Home');
         })
         .catch((error) => alert(error.message));
     }
@@ -50,6 +51,9 @@ export default function Login({ setStatus }) {
           value={email}
           onChangeText={(text) => setEmail(text)}
           style={styles.input}
+          mode="outlined"
+          outlineColor={error && email === '' ? 'red' : 'black'}
+          activeOutlineColor={error && email === '' ? 'red' : 'black'}
         />
         <TextInput
           placeholder="Password"
@@ -57,6 +61,9 @@ export default function Login({ setStatus }) {
           onChangeText={(text) => setPassword(text)}
           style={styles.input}
           secureTextEntry
+          mode="outlined"
+          outlineColor={error && password === '' ? 'red' : 'black'}
+          activeOutlineColor={error && email === '' ? 'red' : 'black'}
         />
       </View>
 
@@ -89,10 +96,8 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: 'white',
     paddingHorizontal: 15,
-    paddingVertical: 10,
     borderRadius: 10,
     marginTop: 5,
-    borderWidth: 2,
   },
   buttonContainer: {
     width: '90%',

@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/core';
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,23 +9,28 @@ import {
 import Profile from '../components/Profile/Profile';
 // import Body from '../components/Chats/Body';
 import Body from '../components/Contact/Contacts';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
 import { BottomNavigation } from 'react-native-paper';
+import { AuthContext } from '../components/Context/Auth';
+import { doc, getDoc } from 'firebase/firestore';
 
-const MusicRoute = () => <Text>Music</Text>;
+const BodyRoute = () => <Body />;
 
 const ProfileRoute = () => <Profile />;
 
 const HomeScreen = () => {
   const navigation = useNavigation();
+
+  const [userData, setUserData] = useState({});
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: 'chat', title: 'Chat', icon: 'chat' },
     { key: 'profile', title: 'Profile', icon: 'account' },
   ]);
+
   const renderScene = BottomNavigation.SceneMap({
-    chat: Body,
-    profile: Profile,
+    chat: BodyRoute,
+    profile: ProfileRoute,
   });
 
   return (

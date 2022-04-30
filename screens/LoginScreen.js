@@ -23,16 +23,6 @@ const LoginScreen = () => {
   const navigation = useNavigation();
   const [status, setStatus] = useState(true);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        navigation.replace('Home');
-      }
-    });
-
-    return unsubscribe;
-  }, []);
-
   return (
     <KeyboardAvoidingView style={styles.container}>
       <Logo />
@@ -65,6 +55,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    
   },
   inputContainer: {
     width: '80%',

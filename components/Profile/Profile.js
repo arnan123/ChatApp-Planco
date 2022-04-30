@@ -1,5 +1,5 @@
-import React from 'react';
-import { auth } from '../../firebase';
+import React, { useEffect, useState, useContext } from 'react';
+import { auth, db } from '../../firebase';
 import { useNavigation } from '@react-navigation/core';
 import { Avatar } from 'react-native-paper';
 import {
@@ -8,9 +8,17 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { doc, getDoc } from 'firebase/firestore';
+import { AuthContext } from '../Context/Auth';
 
 export default function Profile() {
   const navigation = useNavigation();
+  const { user } = useContext(AuthContext);
+  const [userData, setUserData] = useState({});
+
+  // useEffect(() => {
+
+  // }, [user]);
 
   const handleSignOut = () => {
     auth
@@ -25,7 +33,8 @@ export default function Profile() {
     <>
       <View style={styles.container}>
         <Avatar.Text size={50} label="SMP" />
-        <Text>EmailSSS: {auth.currentUser?.email}</Text>
+        <Text>Email: {auth.currentUser?.email}</Text>
+        <Text>Name: {user.username}</Text>
         <TouchableOpacity
           onPress={handleSignOut}
           style={styles.button}

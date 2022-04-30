@@ -1,13 +1,41 @@
-import React from 'react';
-import { Text, TextInput } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { Button, Text, TextInput } from 'react-native';
 import Searchbar from './Searchbar';
-import { View, KeyboardAvoidingView, StyleSheet } from 'react-native';
+import {
+  View,
+  KeyboardAvoidingView,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+} from 'react-native';
+import { AuthContext } from '../Context/Auth';
+import {
+  collection,
+  getDocs,
+  onSnapshot,
+  query,
+  where,
+} from 'firebase/firestore';
+import { db } from '../../firebase';
+import ContactList from './ContactList';
+
 export default function Body() {
+  const [userSearchText, setUserSearchText] = useState('');
+  const [userSearch, setUserSearch] = useState([]);
+  const [userSearch2, setUserSearch2] = useState([]);
+  const { user } = useContext(AuthContext);
+  const [visible, setVisible] = useState(false);
+
   return (
     <KeyboardAvoidingView style={styles.container}>
-      <Searchbar />
-      <View style={styles.container}>
-        <Text>You have no contacts as of the moment</Text>
+      <Searchbar
+        setUserSearch={setUserSearchText}
+        text={userSearchText}
+        visible={visible}
+        setVisible={setVisible}
+      />
+      <View style={styles.containerResults}>
+        <ContactList visible={visible} />
       </View>
     </KeyboardAvoidingView>
   );
@@ -15,62 +43,20 @@ export default function Body() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    zIndex: -1,
+    height: '100%',
+    // height: '20px',
   },
-  inputContainer: {
+  containerResults: {
+    height: '90%',
     width: '80%',
-  },
-  input: {
-    backgroundColor: 'white',
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 10,
-    marginTop: 5,
-    borderWidth: 2,
-  },
-  buttonContainer: {
-    width: '90%',
-    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 40,
+    paddingTop: 80,
+    zIndex: -1,
   },
-  button: {
-    backgroundColor: '#7dff83',
-    width: '100%',
-    padding: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  buttonOutline: {
-    backgroundColor: '#bababa',
-    marginTop: 5,
-  },
-  buttonText: {
-    color: 'black',
-    fontWeight: '700',
+  text: {
+    zIndex: -1,
     fontSize: 16,
-  },
-  buttonOutlineText: {
-    color: 'black',
-    fontWeight: '700',
-    fontSize: 16,
-  },
-  buttonOtherContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  buttonOther: {
-    marginHorizontal: 20,
-    marginTop: 5,
-  },
-  buttonGoogle: {
-    borderColor: 'black',
-    borderWidth: 1,
-  },
-  buttonFacebook: {
-    backgroundColor: 'blue',
   },
 });

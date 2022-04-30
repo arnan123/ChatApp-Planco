@@ -9,12 +9,13 @@ import {
   View,
   Alert,
 } from 'react-native';
-import { auth } from '../../firebase';
+import { auth, db } from '../../firebase';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
 } from 'firebase/auth';
+import { doc, setDoc, Timestamp } from 'firebase/firestore';
 
 function Signup({ setStatus }) {
   const [username, setUsername] = useState('');
@@ -22,18 +23,51 @@ function Signup({ setStatus }) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSignUp = async () => {
-    console.log(email);
-    const res = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    )
-      .then((userCredentials) => {
-        const user = userCredentials.user;
-        console.log('Registered with:', user.email);
-      })
-      .catch((error) => alert(error.message));
+  const handleSignUp = async (e) => {
+    if (!username || !email || !password || !confirmPassword) {
+      Alert.alert('Error', 'Missing Fields', [
+        {
+          text: 'OKAY',
+          onPress: () => console.log('Okay pressed'),
+        },
+      ]);
+    } else if (password != confirmPassword) {
+      Alert.alert('Error', 'Password Mismatch', [
+        {
+          text: 'OKAY',
+          onPress: () => console.log('Okay pressed'),
+        },
+      ]);
+    } else {
+      try {
+        const emailLower = email.toLowerCase();
+        const res = await createUserWithEmailAndPassword(
+          auth,
+          emailLower,
+          password
+        );
+        await setDoc(doc(db, 'users', res.user.uid), {
+          uid: res.user.uid,
+          username,
+          emailLower,
+          createdAt: Timestamp.fromDate(new Date()),
+          isOnline: false,
+        }).then((res) => {
+          Alert.alert('Success', 'Account Created', [
+            {
+              text: 'OKAY',
+              onPress: () => console.log('Okay pressed'),
+            },
+          ]);
+          setUsername('');
+          setEmail('');
+          setPassword('');
+          setConfirmPassword('');
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   return (
@@ -50,26 +84,28 @@ function Signup({ setStatus }) {
           value={email}
           onChangeText={(text) => setEmail(text)}
           style={styles.input}
-          secureTextEntry
         />
         <TextInput
           placeholder="Password"
           value={password}
-          onChangeText={(text) => setConfirmPassword(text)}
+          onChangeText={(text) => setPassword(text)}
           style={styles.input}
           secureTextEntry
         />
         <TextInput
           placeholder="Confirm Password"
           value={confirmPassword}
-          onChangeText={(text) => setPassword(text)}
+          onChangeText={(text) => setConfirmPassword(text)}
           style={styles.input}
           secureTextEntry
         />
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          onPress={handleSignUp}
+          style={styles.button}
+        >
           <Text style={styles.buttonText}>Sign up</Text>
         </TouchableOpacity>
         <TouchableOpacity
