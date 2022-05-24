@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {
   KeyboardAvoidingView,
   View,
@@ -11,14 +11,104 @@ import {
   Alert,
 } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  addDoc,
+  Timestamp,
+  orderBy,
+  setDoc,
+  doc,
+  getDoc,
+  updateDoc,
+} from 'firebase/firestore';
+import { db } from '../firebase';
+import { AuthContext } from '../components/Context/Auth';
 
 export default function ChatScreen() {
   const [val, setVal] = useState('');
   const route = useRoute();
   const navigation = useNavigation();
-  const send = () => {
-    if (val.length <= 20) {
+  const { user } = useContext(AuthContext);
+  const [msgs, setMsgs] = useState([]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const id =
+      user.uid > route.params.uid
+        ? `${user.uid + route.params.uid}`
+        : `${route.params.uid + user.uid}`;
+
+    await addDoc(collection(db, 'messages', id, 'chat'), {
+      val,
+      from: user.uid,
+      to: route.params.uid,
+      createdAt: Timestamp.fromDate(new Date()),
+    });
+  };
+
+  const getMessages = async () => {
+    const id =
+      user.uid > route.params.uid
+        ? `${user.uid + route.params.uid}`
+        : `${route.params.uid + user.uid}`;
+    const msgsRef = collection(db, 'messages', id, 'chat');
+    const q = query(msgsRef, orderBy('createdAt', 'asc'));
+
+    onSnapshot(q, (querySnapshot) => {
+      let msgs = [];
+      querySnapshot.forEach((doc) => {
+        msgs.push(doc.data());
+      });
+      setMsgs(msgs);
+    });
+    return () => unsub();
+  };
+
+  useEffect(async () => {
+    const id =
+      user.uid > route.params.uid
+        ? `${user.uid + route.params.uid}`
+        : `${route.params.uid + user.uid}`;
+    const msgsRef = collection(db, 'messages', id, 'chat');
+    const q = query(msgsRef, orderBy('createdAt', 'asc'));
+
+    onSnapshot(q, (querySnapshot) => {
+      let msgs = [];
+      console.log(querySnapshot.docs);
+      querySnapshot.forEach((doc) => {
+        msgs.push(doc.data());
+      });
+      setMsgs(msgs);
+    });
+  }, []);
+
+  const send = async (e) => {
+    e.preventDefault();
+
+    if (val.length <= 255) {
+      const id =
+        user.uid > route.params.uid
+          ? `${user.uid + route.params.uid}`
+          : `${route.params.uid + user.uid}`;
+
+      await addDoc(collection(db, 'messages', id, 'chat'), {
+        val,
+        from: user.uid,
+        to: route.params.uid,
+        createdAt: Timestamp.fromDate(new Date()),
+      });
       Alert.alert('Success', 'Message sent', [
+        {
+          text: 'OKAY',
+          onPress: () => console.log('Okay pressed'),
+        },
+      ]);
+    } else {
+      Alert.alert('Failed', 'Message Too Long', [
         {
           text: 'OKAY',
           onPress: () => console.log('Okay pressed'),
@@ -47,39 +137,20 @@ export default function ChatScreen() {
         </View>
         <SafeAreaView style={styles.chatcontainer}>
           <ScrollView>
-            <Text style={styles.mytextcontainer}>
-              {route.params.name}
-            </Text>
-            <Text style={styles.othertextcontainer}>
-              {route.params.email}
-            </Text>
-            <Text style={styles.mytextcontainer}>
-              {route.params.uid}
-            </Text>
-            <Text style={styles.othertextcontainer}>
-              AHFIWAIOPFJAWPIOFJAWOPFJAWOPJFAOPWJFOPAWJFAOPJFOPAWFJPOAWJFPOWAJFOPAWJFOPAJWFOP
-            </Text>
-            <Text style={styles.othertextcontainer}>
-              AHFIWAIOPFJAWPIOFJAWOPFJAWOPJFAOPWJFOPAWJFAOPJFOPAWFJPOAWJFPOWAJFOPAWJFOPAJWFOP
-            </Text>
-            <Text style={styles.othertextcontainer}>
-              AHFIWAIOPFJAWPIOFJAWOPFJAWOPJFAOPWJFOPAWJFAOPJFOPAWFJPOAWJFPOWAJFOPAWJFOPAJWFOP
-            </Text>
-            <Text style={styles.othertextcontainer}>
-              AHFIWAIOPFJAWPIOFJAWOPFJAWOPJFAOPWJFOPAWJFAOPJFOPAWFJPOAWJFPOWAJFOPAWJFOPAJWFOP
-            </Text>
-            <Text style={styles.othertextcontainer}>
-              AHFIWAIOPFJAWPIOFJAWOPFJAWOPJFAOPWJFOPAWJFAOPJFOPAWFJPOAWJFPOWAJFOPAWJFOPAJWFOP
-            </Text>
-            <Text style={styles.othertextcontainer}>
-              AHFIWAIOPFJAWPIOFJAWOPFJAWOPJFAOPWJFOPAWJFAOPJFOPAWFJPOAWJFPOWAJFOPAWJFOPAJWFOP
-            </Text>
-            <Text style={styles.mytextcontainer}>
-              {route.params.uid}
-            </Text>
-            <Text style={styles.mytextcontainer}>
-              {route.params.uid}
-            </Text>
+            {msgs.map((message) => (
+              <Text
+                style={
+                  message.from == user.uid
+                    ? styles.mytextcontainer
+                    : styles.othertextcontainer
+                }
+                key={message.createdAt}
+              >
+                {message.val}
+              </Text>
+            ))}
+
+            
           </ScrollView>
         </SafeAreaView>
         <View style={styles.inputcontainer}>
