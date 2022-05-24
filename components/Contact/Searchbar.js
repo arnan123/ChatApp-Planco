@@ -173,6 +173,7 @@ const styles = StyleSheet.create({
     width: '90%',
     position: 'absolute',
     top: 40,
+    zIndex: 1,
   },
   containerModal: {
     width: '90%',
@@ -185,8 +186,8 @@ const styles = StyleSheet.create({
   containerStyle: {
     backgroundColor: 'white',
     padding: 20,
-    height: '80%',
-    zIndex: 5,
+    height: '70%',
+    zIndex: 10,
     flexDirection: 'column',
     alignItems: 'center',
   },
