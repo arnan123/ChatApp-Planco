@@ -33,7 +33,6 @@ export default function Searchbar({
   const { user } = useContext(AuthContext);
 
   const onSearch = async () => {
-    console.log(text.toLowerCase());
     // const docRef = doc(db, "users", "SF");
     const q = query(
       collection(db, 'users'),
@@ -44,7 +43,6 @@ export default function Searchbar({
       // doc.data() is never undefined for query doc snapshots
       setUsers(doc.data());
     });
-    console.log(querySnapshot.size);
     if (text === user.email) {
       Alert.alert('Error', 'You cant search own email', [
         {

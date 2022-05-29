@@ -1,5 +1,15 @@
 import { useNavigation } from '@react-navigation/native';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection,
+  query,
+  where,
+  onSnapshot,
+  addDoc,
+  Timestamp,
+  orderBy,
+  setDoc,
+  doc,
+  getDoc,
+  updateDoc, } from 'firebase/firestore';
 import React, { useContext, useEffect, useState } from 'react';
 import {
   SafeAreaView,
@@ -30,9 +40,26 @@ export default function ContactList({ visible }) {
     );
   };
 
-  useEffect(() => {
-    getAllUsers();
-  }, [visible]);
+  const getAllUserss = async () => {
+    const ref = collection(
+      db,
+      'users',
+      auth.currentUser?.uid,
+      'friends'
+    );
+    const q = query(ref, orderBy('createdAt', 'asc'));
+    onSnapshot(q, (querySnapshot) => {
+      let users = [];
+      querySnapshot.forEach((doc) => {
+        users.push(doc.data());
+      });
+      setFriends(users);
+    });
+  };
+
+  useEffect(async () => {
+    getAllUserss();
+  }, []);
 
   return (
     <SafeAreaView style={styles.containerResults}>
@@ -43,7 +70,6 @@ export default function ContactList({ visible }) {
               <View key={f.id} style={styles.container}>
                 <TouchableOpacity
                   onPress={() => {
-                    console.log('navigateChat');
                     navigation.navigate('Chat', {
                       uid: f.uid,
                       name: f.username,

@@ -78,7 +78,6 @@ export default function ChatScreen() {
 
     onSnapshot(q, (querySnapshot) => {
       let msgs = [];
-      console.log(querySnapshot.docs);
       querySnapshot.forEach((doc) => {
         msgs.push(doc.data());
       });
@@ -149,8 +148,6 @@ export default function ChatScreen() {
                 {message.val}
               </Text>
             ))}
-
-            
           </ScrollView>
         </SafeAreaView>
         <View style={styles.inputcontainer}>
